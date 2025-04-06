@@ -1,0 +1,15 @@
+# https://docs.astral.sh/uv/guides/integration/docker/
+FROM ghcr.io/astral-sh/uv:python3.12-alpine
+
+# Celery worker also needs ffmpeg
+RUN apk add --no-cache ffmpeg
+
+ADD . /src
+WORKDIR /src
+
+RUN uv sync --frozen
+
+ENV CELERY_BROKER_URL=redis://redis:6379/0
+ENV CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+CMD ["uv", "run", "celery", "-A", "src.core.celery_config.celery_app", "worker", "--loglevel=info"]

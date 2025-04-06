@@ -1,0 +1,49 @@
+stages:
+  - test
+
+variables:
+  DOCKER_COMPOSE_PATH: "docker/docker-compose.yml"
+  DOCKER_HOST: "tcp://docker:2375/"
+  DOCKER_TLS_CERTDIR: ""
+
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - apk add --no-cache curl jq netcat-openbsd nodejs npm
+  - npm install -g newman newman-reporter-html
+
+test:
+  stage: test
+  script:
+    - echo "📦 Copying environment variables..."
+    - cp "$ENV_FILE" .env
+
+    - echo "🚀 Starting Docker Compose with Flask..."
+    - docker compose -f $DOCKER_COMPOSE_PATH up -d
+
+    - echo "⏳ Waiting for Flask to start..."
+    - until docker logs flask_app 2>&1 | grep -q "Listening at:"; do
+        echo "⏳ Still waiting for Flask...";
+        sleep 5;
+      done
+
+    - echo "🔄 Running DB initialization..."
+    - docker exec flask_app uv run flask create-mock-data
+
+    - echo "🧪 Running Newman tests using newman container..."
+    - mkdir -p reports
+
+    - docker exec newman_runner npm install -g newman-reporter-html
+
+    - docker exec newman_runner newman run /etc/newman/ANB.postman_collection.json \
+        --env-var "baseUrl=http://nginx:80" \
+        --reporters cli,html \
+        --reporter-html-export /etc/newman/report/report.html
+
+  artifacts:
+    when: always
+    paths:
+      - reports/report.html

@@ -1,0 +1,14 @@
+# https://docs.astral.sh/uv/guides/integration/docker/
+FROM ghcr.io/astral-sh/uv:python3.12-alpine
+
+# Install ffmpeg
+RUN apk add --no-cache ffmpeg
+
+ADD . /src
+WORKDIR /src
+
+RUN uv sync --frozen
+
+EXPOSE 5000
+RUN chmod +x /src/api-entrypoint.sh
+CMD ["/src/api-entrypoint.sh"]

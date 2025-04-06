@@ -1,0 +1,949 @@
+{
+	"info": {
+		"_postman_id": "df38707b-38bc-4323-a31a-a0bb0351de71",
+		"name": "ANB",
+		"description": "# Descripción\n\nEsta colección contiene las peticiones para probar la API REST creada para la ANB (Asociación Nacional de Baloncesto) en el proyecto **ANB All Stars**.\n\n# Estructura\n\nCada carpeta contiene las rutas asociadas a cada entidad y/o operación:\n\n- **/Videos**: Endpoints asociados al recurso de Video.\n    \n\n# Cómo usarla\n\nPara ejecutarla localmente, es necesario tener la aplicación corriendo en tu máquina y contar con Docker instalado.\n\n``` bash\ngit clone https://gitlab.com/aws-all-wallet-surrendered/ANBScouts.git  \ncd ANBScouts  \ncd docker  \ndocker-compose up\n\n ```",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36491811",
+		"_collection_link": "https://anb222.postman.co/workspace/ANB-Workspace~4aab52b8-b151-40c4-9e9c-b76c2e352079/collection/36491811-df38707b-38bc-4323-a31a-a0bb0351de71?action=share&source=collection_link&creator=36491811"
+	},
+	"item": [
+		{
+			"name": "Videos",
+			"item": [
+				{
+					"name": "GET All videos",
+					"item": [
+						{
+							"name": "401 Unauthorized - No Token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 401 Unauthorized\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "200 OK - User Has Videos",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 200 OK\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response should be an array of videos\", function () {\r",
+											"    let jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an('array');\r",
+											"    pm.expect(jsonData.length).to.be.greaterThan(0);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const loginPayload = {\r",
+											"    username: \"user_0\",\r",
+											"    password: \"password123\"\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest({\r",
+											"    url: 'http://nginx:80/api/auth/login',\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(loginPayload)\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (err) {\r",
+											"        console.error(\"Login request failed:\", err);\r",
+											"    } else {\r",
+											"        const jsonData = res.json();\r",
+											"        console.log(jsonData)\r",
+											"        if (jsonData.access_token) {\r",
+											"            pm.environment.set(\"authToken\", jsonData.access_token);\r",
+											"            console.log(\"Token saved to environment.\");\r",
+											"        } else {\r",
+											"            console.error(\"No token found in login response.\");\r",
+											"        }\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "200 OK - User Has No Videos",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 200 OK\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response should be an empty array\", function () {\r",
+											"    let jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an('array');\r",
+											"    pm.expect(jsonData.length).to.equal(0);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const loginPayload = {\r",
+											"    username: \"user_4\",\r",
+											"    password: \"password123\"\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest({\r",
+											"    url: 'http://nginx:80/api/auth/login',\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(loginPayload)\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (err) {\r",
+											"        console.error(\"Login request failed:\", err);\r",
+											"    } else {\r",
+											"        const jsonData = res.json();\r",
+											"        console.log(jsonData)\r",
+											"        if (jsonData.access_token) {\r",
+											"            pm.environment.set(\"authToken\", jsonData.access_token);\r",
+											"            console.log(\"Token saved to environment.\");\r",
+											"        } else {\r",
+											"            console.error(\"No token found in login response.\");\r",
+											"        }\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "En esta carpeta se encuentra los endpoints asociados a la ruta \\`/videos\\` para el verbo _**GET,**_ donde obtenemos todos los videos del usuario autenticado."
+				},
+				{
+					"name": "GET One video",
+					"item": [
+						{
+							"name": "401 Unauthorized - No Token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 401 Unauthorized\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "404 Not Found- User video dont exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 404 Not Found\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const loginPayload = {\r",
+											"    username: \"user_4\",\r",
+											"    password: \"password123\"\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest({\r",
+											"    url: 'http://nginx:80/api/auth/login',\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(loginPayload)\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (err) {\r",
+											"        console.error(\"Login request failed:\", err);\r",
+											"    } else {\r",
+											"        const jsonData = res.json();\r",
+											"        console.log(jsonData)\r",
+											"        if (jsonData.access_token) {\r",
+											"            pm.environment.set(\"authToken\", jsonData.access_token);\r",
+											"            console.log(\"Token saved to environment.\");\r",
+											"        } else {\r",
+											"            console.error(\"No token found in login response.\");\r",
+											"        }\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos/999",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										"999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "200 OK- User video exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 200 OK\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const loginPayload = {\r",
+											"    username: \"user_0\",\r",
+											"    password: \"password123\"\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest({\r",
+											"    url: 'http://nginx:80/api/auth/login',\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(loginPayload)\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (err) {\r",
+											"        console.error(\"Login request failed:\", err);\r",
+											"    } else {\r",
+											"        const jsonData = res.json();\r",
+											"        console.log(jsonData)\r",
+											"        if (jsonData.access_token) {\r",
+											"            pm.environment.set(\"authToken\", jsonData.access_token);\r",
+											"            console.log(\"Token saved to environment.\");\r",
+											"        } else {\r",
+											"            console.error(\"No token found in login response.\");\r",
+											"        }\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "403 Unauthorized- User dont have permissions to video",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 403 Unauthorized\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const loginPayload = {\r",
+											"    username: \"user_4\",\r",
+											"    password: \"password123\"\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest({\r",
+											"    url: 'http://nginx:80/api/auth/login',\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(loginPayload)\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (err) {\r",
+											"        console.error(\"Login request failed:\", err);\r",
+											"    } else {\r",
+											"        const jsonData = res.json();\r",
+											"        console.log(jsonData)\r",
+											"        if (jsonData.access_token) {\r",
+											"            pm.environment.set(\"authToken\", jsonData.access_token);\r",
+											"            console.log(\"Token saved to environment.\");\r",
+											"        } else {\r",
+											"            console.error(\"No token found in login response.\");\r",
+											"        }\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos/2",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										"2"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "En esta carpeta se encuentra los endpoints asociados a la ruta \\`/videos/:id\\` para el verbo _**GET,**_ donde obtenemos un video especifico del usuario autenticado."
+				},
+				{
+					"name": "DELETE One video",
+					"item": [
+						{
+							"name": "401 Unauthorized - No Token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 401 Unauthorized\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "404 Not Found- User video dont exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 404 Not Found\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const loginPayload = {\r",
+											"    username: \"user_4\",\r",
+											"    password: \"password123\"\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest({\r",
+											"    url: 'http://nginx:80/api/auth/login',\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(loginPayload)\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (err) {\r",
+											"        console.error(\"Login request failed:\", err);\r",
+											"    } else {\r",
+											"        const jsonData = res.json();\r",
+											"        console.log(jsonData)\r",
+											"        if (jsonData.access_token) {\r",
+											"            pm.environment.set(\"authToken\", jsonData.access_token);\r",
+											"            console.log(\"Token saved to environment.\");\r",
+											"        } else {\r",
+											"            console.error(\"No token found in login response.\");\r",
+											"        }\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos/999",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										"999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "400 Bad Request - User video ready for vote",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 400 Bad Request\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const loginPayload = {\r",
+											"    username: \"user_0\",\r",
+											"    password: \"password123\"\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest({\r",
+											"    url: 'http://nginx:80/api/auth/login',\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(loginPayload)\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (err) {\r",
+											"        console.error(\"Login request failed:\", err);\r",
+											"    } else {\r",
+											"        const jsonData = res.json();\r",
+											"        console.log(jsonData)\r",
+											"        if (jsonData.access_token) {\r",
+											"            pm.environment.set(\"authToken\", jsonData.access_token);\r",
+											"            console.log(\"Token saved to environment.\");\r",
+											"        } else {\r",
+											"            console.error(\"No token found in login response.\");\r",
+											"        }\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "403 Unauthorized- User dont have permissions to video",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 403 Unauthorized\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const loginPayload = {\r",
+											"    username: \"user_4\",\r",
+											"    password: \"password123\"\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest({\r",
+											"    url: 'http://nginx:80/api/auth/login',\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(loginPayload)\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (err) {\r",
+											"        console.error(\"Login request failed:\", err);\r",
+											"    } else {\r",
+											"        const jsonData = res.json();\r",
+											"        console.log(jsonData)\r",
+											"        if (jsonData.access_token) {\r",
+											"            pm.environment.set(\"authToken\", jsonData.access_token);\r",
+											"            console.log(\"Token saved to environment.\");\r",
+											"        } else {\r",
+											"            console.error(\"No token found in login response.\");\r",
+											"        }\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos/6",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "200 OK- User video was deleted",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 200 Ok\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const loginPayload = {\r",
+											"    username: \"user_1\",\r",
+											"    password: \"password123\"\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest({\r",
+											"    url: 'http://nginx:80/api/auth/login',\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(loginPayload)\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (err) {\r",
+											"        console.error(\"Login request failed:\", err);\r",
+											"    } else {\r",
+											"        const jsonData = res.json();\r",
+											"        console.log(jsonData)\r",
+											"        if (jsonData.access_token) {\r",
+											"            pm.environment.set(\"authToken\", jsonData.access_token);\r",
+											"            console.log(\"Token saved to environment.\");\r",
+											"        } else {\r",
+											"            console.error(\"No token found in login response.\");\r",
+											"        }\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{authToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/videos/2",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"videos",
+										"2"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "En esta carpeta se encuentra los endpoints asociados a la ruta \\`/videos/:id\\` para el verbo _**DELETE,**_ donde podremos borrar los videos del usuario autenticado mientras no este listo para ser votado, y ademas de que el sea propietario."
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"user_0\",\r\n    \"password\": \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Rutas asociadas a `/videos` para realizar las operaciones asociadas al recurso _**Videos.**_"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{user1DevToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://nginx:80/api"
+		},
+		{
+			"key": "developmentUrl",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		}
+	]
+}
